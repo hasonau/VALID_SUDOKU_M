@@ -2,102 +2,70 @@
 #include <vector>
 #include <unordered_set>
 
-//MY CODE .Orginial.First try.
 using namespace std;
 
 class Solution {
 public:
     bool isValidSudoku(vector<vector<char>>& board) {
         // Check rows for validity
-        for (int i = 0; i < 9; ++i) {
+        for (int row = 0; row < 9; ++row) {
             unordered_set<char> rowSet; // Store seen characters in a row
-            for (int j = 0; j < 9; ++j) {
-                if (board[i][j] == '.') {
+            for (int col = 0; col < 9; ++col) {
+                if (board[row][col] == '.') {
                     continue; // Skip empty cells
                 }
                 // Check if the current character in the row has been seen before
-                if (rowSet.find(board[i][j]) != rowSet.end()) {
-                    cout << "Invalid: Duplicate found in row " << i << ", column " << j << endl;
+                if (rowSet.find(board[row][col]) != rowSet.end()) {
+                    cout << "Invalid: Duplicate found in row " << row << ", column " << col << endl;
                     return false;
                 }
-                rowSet.insert(board[i][j]); // Add character to set
+                rowSet.insert(board[row][col]); // Add character to set
             }
         }
 
         // Check columns for validity
-        for (int i = 0; i < 9; ++i) {
+        for (int col = 0; col < 9; ++col) {
             unordered_set<char> colSet; // Store seen characters in a column
-            for (int j = 0; j < 9; ++j) {
-                if (board[j][i] == '.') {
+            for (int row = 0; row < 9; ++row) {
+                if (board[row][col] == '.') {
                     continue; // Skip empty cells
                 }
                 // Check if the current character in the column has been seen before
-                if (colSet.find(board[j][i]) != colSet.end()) {
-                    cout << "Invalid: Duplicate found in column " << i << ", row " << j << endl;
+                if (colSet.find(board[row][col]) != colSet.end()) {
+                    cout << "Invalid: Duplicate found in column " << col << ", row " << row << endl;
                     return false;
                 }
-                colSet.insert(board[j][i]); // Add character to set
+                colSet.insert(board[row][col]); // Add character to set
             }
         }
-//        SUBGRIDS TESTING.
-        cout << "Passed column testing" << endl;
-        int k, l, i = 0, j = 0;
-        k = i;
-        l = j;
-        unordered_set<int> Record_Set;
-        for (i; i < k + 3; ++i) {
-            for (j; j < l + 3; ++j) {
-                cout << board[i][j] << " ";
-                if (board[i][j] == '.') {
-                    continue;
-                }
-                if (Record_Set.find(board[i][j]) != Record_Set.end()) {
-                    cout << "from 3 by 3 testing" << endl;
-                    return false;
-                }
-                Record_Set.insert(board[i][j]);
-            }
-            j--;
-            if ( ((j + 1) != 9) || (k+3-i!=1) ) {
-                if (l + 3 - j == 1) {
-                    if (k + 3 - i == 1) {
-                        cout<<"record set"<<endl;
-                        Record_Set.clear();
-                        l = j + 1;
-                        j = j + 1;
-                        if (i < 3) {
-                            i = -1;
-                        } else if (i < 6) {
-                            i = 2;
-                        } else if (i < 9) {
-                            i = 5;
+
+        cout << "Passed column and row checks" << endl;
+
+        // Check 3x3 subgrids for validity
+        for (int startRow = 0; startRow < 9; startRow += 3) {
+            for (int startCol = 0; startCol < 9; startCol += 3) {
+                unordered_set<char> subgridSet; // Store seen characters in a 3x3 subgrid
+                for (int row = startRow; row < startRow + 3; ++row) {
+                    for (int col = startCol; col < startCol + 3; ++col) {
+                        if (board[row][col] == '.') {
+                            continue; // Skip empty cells
                         }
-                    }
-                    else {
-                        if ((j + 1) % 3 == 0) {
-                            if (j < 3) {
-                                j = 0;
-                            } else if (j < 6) {
-                                j = 3;
-                            } else if (j < 9) {
-                                j = 6;
-                            }
+                        // Check if the current character in the subgrid has been seen before
+                        if (subgridSet.find(board[row][col]) != subgridSet.end()) {
+                            cout << "Invalid: Duplicate found in 3x3 subgrid starting at row " << startRow
+                                 << ", column " << startCol << endl;
+                            return false;
                         }
+                        subgridSet.insert(board[row][col]); // Add character to set
                     }
                 }
             }
-
-            if (j + 1 == 9 && (i + 1 == 3 || i + 1 == 6)) {
-                    Record_Set.clear();
-                    j = 0;
-                    l = 0;
-                    k = i+1;
-                }
-                cout << endl;
-            }
-            return true;
         }
 
+        // If all checks passed, the Sudoku board is valid
+        cout << "The sudoku board is valid." << endl;
+        return true;
+    }
 };
 
 int main() {
